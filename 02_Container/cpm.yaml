@@ -1,0 +1,9 @@
+channels :
+    - r
+    - bioconda
+    - conda-forge
+    - defaults
+dependencies :
+    - r-base =4.0
+    - bioconductor-edger =3.30.0
+    - r-mass =7.3-53  

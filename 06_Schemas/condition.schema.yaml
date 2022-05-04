@@ -1,0 +1,10 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+description: an entry in the sample sheet
+properties:
+    condition:
+        type: string
+        description: sample condition that will be compared during differential expression analysis (e.g. a treatment, a tissue time, a disease)
+
+required:
+    - condition

@@ -1,0 +1,106 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+description: snakemake configuration file
+
+type: object
+
+properties:
+  samples:
+    type: string
+
+  coldata:
+    type: string
+
+  condition:
+    type: string
+
+  ref:
+    type: object
+    properties:
+      genome:
+        type: string
+      index:
+        type: string
+      annotation:
+        type: string
+    required:
+      - genome
+      - index
+      - annotation
+
+  microbeannotator:
+    type: object
+    properties:
+      folder:
+        type: string
+      method:
+        type: string
+      threads:
+        type: integer
+      lightversion:
+        type: string
+      protfiles:
+        type: string
+      processes:
+        type: integer
+      annotationfolder:
+        type: string
+    required:
+      - folder
+      - method
+      - threads
+      - protfiles
+      - processes
+      - annotationfolder
+
+  filtering:
+    type: object
+    properties:
+      # thresh_cpm:
+      #   type: float
+      thresh_sample:
+        type: integer
+    required:
+      # - thresh_cpm
+      - thresh_sample
+
+  pca:
+    type: object
+    properties:
+      labels:
+        type: array
+        items:
+          type: string
+    required:
+      - labels
+
+  diffexp:
+    type: object
+    properties:
+      ref_level:
+        type: string
+      lfcshrink_type:
+        type: string
+      gene_name:
+        type: string
+      mutant_level:
+        type: string
+      nbpval:
+        type: integer
+      # pCutoff:
+      #   type: double
+      # FCcutoff:
+      #   type: integer
+    required:
+      - ref_level
+      - lfcshrink_type
+      - gene_name
+      - mutant_level
+      - nbpval
+  required:
+    - samples
+    - coldata
+    - condition
+    - ref
+    - filtering
+    - diffexp

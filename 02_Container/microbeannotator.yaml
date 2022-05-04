@@ -1,0 +1,18 @@
+channels:
+    - conda-forge
+    - bioconda
+    - defaults
+    - cruizperez
+    - rpetit3
+dependencies:
+    - microbeannotator=2.0.5
+    - python=3.7
+    - attrs=20.3.0
+    - biopython=1.78
+    - matplotlib=3.4.1
+    - pandas=1.2.4
+    - psutil=5.8.0
+    - pywget=3.2
+    - requests=2.25.1
+    - seaborn=0.11.1
+    - aspera-connect=3.9.6
