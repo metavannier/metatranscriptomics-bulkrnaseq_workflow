@@ -6,23 +6,23 @@ EXT = config["run"]["ext"]
 # ----------------------------------------------
 # FastQC to check the reads quality
 # ----------------------------------------------
-rule fastqc:
-  output:
-    expand( "05_Output/01_fastqc/{samples}_{run}_fastqc.html", samples=SAMPLES, run=RUN),
-    expand( "05_Output/01_fastqc/{samples}_{run}_fastqc.zip", samples=SAMPLES, run=RUN)
+# rule fastqc:
+#   output:
+#     expand( "05_Output/01_fastqc/{samples}_{run}_fastqc.html", samples=SAMPLES, run=RUN),
+#     expand( "05_Output/01_fastqc/{samples}_{run}_fastqc.zip", samples=SAMPLES, run=RUN)
 
-  input:
-    expand( "00_RawData/{samples}_{run}.{ext}", samples=SAMPLES, run=RUN, ext=EXT)
+#   input:
+#     expand( "00_RawData/{samples}_{run}.{ext}", samples=SAMPLES, run=RUN, ext=EXT)
 
-  conda: 
-    CONTAINER + "fastqc.yaml"
+#   conda: 
+#     CONTAINER + "fastqc.yaml"
 
-  shell:
-    "fastqc --outdir 05_Output/01_fastqc/ {input}"
+#   shell:
+#     "fastqc --outdir 05_Output/01_fastqc/ {input}"
 
-# ----------------------------------------------
-# Trimmomatic: trimming reads and removing adapter sequences
-# ----------------------------------------------
+# # ----------------------------------------------
+# # Trimmomatic: trimming reads and removing adapter sequences
+# # ----------------------------------------------
 
 rule trimmomatic:
   input:
@@ -32,17 +32,28 @@ rule trimmomatic:
     sample_trimmed=expand( "05_Output/01_trimmomatic/{samples}_{run}.trimmed.fastq", samples=SAMPLES, run=RUN),
     sample_untrimmed=expand( "05_Output/01_trimmomatic/{samples}_{run}un.trimmed.fastq", samples=SAMPLES, run=RUN)
 
+  params:
+    adaptaters=config["trimmomatic"]["adaptaters"],
+    leading=config["trimmomatic"]["leading"],
+    trailing=config["trimmomatic"]["trailing"],
+    minlen=config["trimmomatic"]["minlen"]
+
   conda: 
     CONTAINER + "trimmomatic.yaml"
 
   shell:
     """
     sample=({input.sample})
+    adaptaters=({params.adaptaters})
+    leading=({params.leading})
+    trailing=({params.trailing})
+    minlen=({params.minlen})
     sample_trimmed=({output.sample_trimmed})
     sample_untrimmed=({output.sample_untrimmed})
     len=${{#sample[@]}}
     for (( i=0; i<$len; i=i+2 ))
-    do trimmomatic PE -threads 4 ${{sample[$i]}} ${{sample[$i+1]}} ${{sample_trimmed[$i]}} ${{sample_untrimmed[$i]}} ${{sample_trimmed[$i+1]}} ${{sample_untrimmed[$i+1]}} LEADING:20 TRAILING:15 SLIDINGWINDOW:4:15 MINLEN:36
+    do trimmomatic PE -threads 4 ${{sample[$i]}} ${{sample[$i+1]}} ${{sample_trimmed[$i]}} ${{sample_untrimmed[$i]}} ${{sample_trimmed[$i+1]}} ${{sample_untrimmed[$i+1]}} ILLUMINACLIP:${{adaptaters}}:2:30:10 LEADING:${{leading}} TRAILING:${{trailing}} SLIDINGWINDOW:4:15 MINLEN:${{minlen}}
+    rm ${{sample[$i]}} ${{sample[$i+1]}}
     done
     """
 
@@ -68,11 +79,16 @@ rule sortmerna:
   shell:
     """
     sample_trimmed=({input.sample_trimmed})
+    nonrrnapath=({params.nonrrnapath})
+    rrnapath=({params.rrnapath})
     len=${{#sample_trimmed[@]}}
+    flag=0
     for (( i=0; i<$len; i=i+2 ))
-    do sortmerna --reads ${{sample_trimmed[$i]}} --reads ${{sample_trimmed[$i+1]}} --workdir {params.workdir} --ref {input.ddb} --fastx --paired_out --out2 --aligned {params.rrnapath} --other {params.nonrrnapath} -threads 10
+    do sortmerna --reads ${{sample_trimmed[$i]}} --reads ${{sample_trimmed[$i+1]}} --workdir {params.workdir} --ref {input.ddb} --fastx --paired_out --out2 --aligned ${{rrnapath[$flag]}} --other ${{nonrrnapath[$flag]}} -threads 6
+    flag=$((flag+1))
     rm -r {params.rmkvdb}
     rm -r {params.rmreadb}
+    rm ${{sample_trimmed[$i]}} ${{sample_trimmed[$i+1]}}
     done
     """
 

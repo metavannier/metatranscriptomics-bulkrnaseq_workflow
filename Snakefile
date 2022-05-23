@@ -35,6 +35,9 @@ SAMPLES = expand("{samples.project}_{samples.condition}_{samples.sample}",sample
 RUN =  config["run"]["type"].split(',')
 EXT = config["run"]["ext"]
 WAY = config["run"]["way"].split(',')
+PROJ = config["qiime"]["name"]
+# Database information to assign taxonomy
+DB_classifier = config["taxonomy"]["database_classified"]
 ref_level = config["diffexp"]["ref_level"]
 genome = config["ref"]["genome"]
 index = config["ref"]["index"]
@@ -45,10 +48,12 @@ RUN_ID = expand("{samples.project}_{samples.condition}_{samples.sample}",samples
 
 rule all:
   input:
-    expand( "05_Output/02_trimmomatic/{samples}_{run}.trimmed.fastq", samples=SAMPLES, run=RUN),
-    expand( "05_Output/02_trimmomatic/{samples}_{run}un.trimmed.fastq", samples=SAMPLES, run=RUN),
-    # expand( "05_Output/02_sortmerna/{samples}_non-rRNA-reads_{way}.fq", samples=SAMPLES, way=WAY),
-    # expand( "05_Output/02_sortmerna/{samples}_rRNA-reads_{way}.fq", samples=SAMPLES, way=WAY),
+    # expand( "05_Output/01_fastqc/{samples}_{run}_fastqc.html", samples=SAMPLES, run=RUN),
+    # expand( "05_Output/01_fastqc/{samples}_{run}_fastqc.zip", samples=SAMPLES, run=RUN),
+    # sample_trimmed=expand( "05_Output/01_trimmomatic/{samples}_{run}.trimmed.fastq", samples=SAMPLES, run=RUN),
+    # sample_untrimmed=expand( "05_Output/01_trimmomatic/{samples}_{run}un.trimmed.fastq", samples=SAMPLES, run=RUN),
+    # nonrrna=expand( "05_Output/02_sortmerna/{samples}_non-rRNA-reads_{way}.fq", samples=SAMPLES, way=WAY),
+    # rrna=expand( "05_Output/02_sortmerna/{samples}_rRNA-reads_{way}.fq", samples=SAMPLES, way=WAY),
     # expand( "05_Output/03_fastqc/{samples}_non-rRNA-reads_{way}_fastqc.html", samples=SAMPLES, way=WAY),
     # expand( "05_Output/03_fastqc/{samples}_non-rRNA-reads_{way}_fastqc.zip", samples=SAMPLES, way=WAY),
     # OUTPUTDIR + "03_fastqc/non-rRNA-reads_trimmed_multiqc.html",
@@ -58,6 +63,28 @@ rule all:
     # conversiondb = microbeannotatordb + "/conversion.db",
     ### Annotation
     # mockannotationfolder = annotationfolder + "/mockfile.txt",
+    #### Qiime import
+    # q2_import = OUTPUTDIR + "05_qiime_import/" + PROJ + "-demux-paired-end.qza",
+    # primer = OUTPUTDIR + "05_qiime_import/" + PROJ + "-PE-demux-noprimer.qzv",
+    # table = OUTPUTDIR + "06_dada2/" + PROJ + "-table-dada2.qza",
+    # rep = OUTPUTDIR + "06_dada2/" + PROJ + "-rep-seqs-dada2.qza",
+    # stats = OUTPUTDIR + "06_dada2/" + PROJ + "-dada2-stats.qza",
+    # filterrep = OUTPUTDIR + "06_dada2/" + PROJ + "-rep-filtered-seqs-dada2.qza",
+    # filtertable = OUTPUTDIR + "06_dada2/" + PROJ + "-table-filtered-dada2.qza",
+    # sklearn = OUTPUTDIR + "07_taxonomy/" + PROJ + "-tax_sklearn.qza",
+    # taxafiltertable = OUTPUTDIR + "07_taxonomy/" + PROJ + "-taxa-table-filtered-dada2.qza",
+    # q2_repseq_filtered = OUTPUTDIR + "07_taxonomy/" + PROJ + "-rep-filtered-seqs-taxa-dada2.qza",
+    # table_tax = OUTPUTDIR + "07_taxonomy/taxonomy.tsv",
+    # table_tax_filtered = report(OUTPUTDIR + "07_taxonomy/taxonomy_filtered.tsv", caption = ROOTDIR + "/07_Report/tax.rst", category="04 taxonomy"),
+    # rep_viz = report(OUTPUTDIR + "07_taxonomy/" + PROJ + "-rep-filtered-seqs-taxa-dada2.qzv", caption = ROOTDIR + "/07_Report/dada2seq.rst", category="03 dada2"),
+    # stats_viz = report(OUTPUTDIR + "06_dada2/" + PROJ + "-dada2-stats.qzv", caption = ROOTDIR + "/07_Report/dada2summary.rst", category="03 dada2"),
+    # featurestat = report(OUTPUTDIR + "07_taxonomy/" + PROJ + "-taxa-table-filtered-dada2.qzv", caption = ROOTDIR + "/07_Report/dada2summary.rst", category="04 taxonomy"),
+    # rarefactionfiltertable = OUTPUTDIR + "07_taxonomy/" + PROJ + "-rarefaction-table-filtered-dada2.qza",
+    # relativefreqtable = OUTPUTDIR + "07_taxonomy/" + PROJ + "-relative-frequency-dada2.qza",
+    # table_biom = OUTPUTDIR + "07_taxonomy/feature-table.biom",
+    # taxo_table_biom = OUTPUTDIR + "07_taxonomy/" + PROJ + "-asv-table-with-taxonomy.biom",
+    # taxo_table_tsv = OUTPUTDIR + "07_taxonomy/" + PROJ + "-asv-table-with-taxonomy.tsv",
+    # taxabarplots = OUTPUTDIR + "07_taxonomy/" + PROJ + "-taxa-bar-plots.qzv",
     # index1 = expand( OUTPUTDIR + "{index}.1.ht2", index=index),
     # index2 = expand( OUTPUTDIR + "{index}.2.ht2", index=index),
     # index3 = expand( OUTPUTDIR + "{index}.3.ht2", index=index),
@@ -66,7 +93,10 @@ rule all:
     # index6 = expand( OUTPUTDIR + "{index}.6.ht2", index=index),
     # index7 = expand( OUTPUTDIR + "{index}.7.ht2", index=index),
     # index8 = expand( OUTPUTDIR + "{index}.8.ht2", index=index),
-    # bam = expand( OUTPUTDIR + "05_hisat/{samples}.bam", samples=SAMPLES),
+    # bam = expand( OUTPUTDIR + "08_hisat/{samples}.bam", samples=SAMPLES),
+    #### Samtools coverage: genome coverage
+    # coverage = expand( OUTPUTDIR + "08_hisat/{samples}_coverage.txt", samples=SAMPLES),
+    avcoverage = expand( OUTPUTDIR + "08_hisat/average_coverage.txt", samples=SAMPLES),
     # countmatrices = expand( OUTPUTDIR + "06_featurecounts/{samples}_count.txt", samples=SAMPLES),
     # count_df = OUTPUTDIR + "07_cpm/count.txt",
     # output_filter_count = OUTPUTDIR + "07_cpm/count_filtered.txt",
@@ -96,7 +126,7 @@ report: "report/workflow.rst"
 # Impose rule order for the execution of the workflow 
 # ----------------------------------------------
 
-ruleorder: trimmomatic > fastqc_trimmed > hisat_build > hisat > featureCounts > cpm_filtering > deseq2_init > diffexp
+# ruleorder: trimmomatic > fastqc_trimmed > hisat_build > hisat > featureCounts > cpm_filtering > deseq2_init > diffexp
 
 # ----------------------------------------------
 # Load rules 
@@ -104,5 +134,6 @@ ruleorder: trimmomatic > fastqc_trimmed > hisat_build > hisat > featureCounts > 
 
 include: ENVDIR + "clean.smk"
 include: ENVDIR + "functional_annotation.smk"
+include: ENVDIR + "taxonomic_annotation.smk"
 include: ENVDIR + "count.smk"
 include: ENVDIR + "diffexp.smk"

@@ -39,38 +39,38 @@ rule hisat_build:
 # ----------------------------------------------
 rule hisat:
   output:
-    bam = expand( OUTPUTDIR + "05_hisat/{samples}.bam", samples=SAMPLES)
+    bam = expand( OUTPUTDIR + "08_hisat/{samples}.bam", samples=SAMPLES)
     
   input:
-    sample_trimmed=expand( OUTPUTDIR + "02_trimmomatic/{samples}_{run}.trimmed.fastq", samples=SAMPLES, run=RUN)
+    nonrrna = expand( "05_Output/02_sortmerna/{samples}_non-rRNA-reads_{way}.fq", samples=SAMPLES, way=WAY),
 
   conda: 
     CONTAINER + "hisat2.yaml"
 
   params:
-    sam = expand( OUTPUTDIR + "05_hisat/{samples}.sam", samples=SAMPLES),
+    sam = expand( OUTPUTDIR + "08_hisat/{samples}.sam", samples=SAMPLES),
     reads = config["run"]["reads"],
     index = OUTPUTDIR + config["ref"]["index"]
 
   shell:
     """
     index={params.index}
-    sample_trimmed=({input.sample_trimmed})
-    len=${{#sample_trimmed[@]}}
+    nonrrna=({input.nonrrna})
+    len=${{#nonrrna[@]}}
     reads=({params.reads})
     sam=({params.sam})
     bam=({output.bam})
     flag=0
     if [ ${{reads}} == 'paired' ];then
       for (( i=0; i<$len; i=i+2 ))
-        do hisat2 -p 12 -x ${{index}} -1 ${{sample_trimmed[$i]}} -2 ${{sample_trimmed[$i+1]}} -S ${{sam[$flag]}}
+        do hisat2 -p 12 -x ${{index}} -1 ${{nonrrna[$i]}} -2 ${{nonrrna[$i+1]}} -S ${{sam[$flag]}}
           samtools sort ${{sam[$flag]}} > ${{bam[$flag]}}
           rm ${{sam[$flag]}}
           flag=$((${{flag}}+1))
       done
     elif [ ${{reads}} == 'unpaired' ];then
       for (( i=0; i<$len; i++ ))
-        do hisat2 -p 12 -x ${{index}} -U ${{sample_trimmed[$i]}} -S ${{sam[$i]}}
+        do hisat2 -p 12 -x ${{index}} -U ${{nonrrna[$i]}} -S ${{sam[$i]}}
           samtools sort ${{sam[$i]}} > ${{bam[$i]}}
           rm ${{sam[$i]}}
       done
@@ -79,6 +79,43 @@ rule hisat:
     fi
     """
 
+# ----------------------------------------------
+# samtools coverage: genome coverage
+# ----------------------------------------------
+
+rule coverage:
+  input:
+    bam = expand( OUTPUTDIR + "08_hisat/{samples}.bam", samples=SAMPLES) 
+  output:
+    coverage = expand( OUTPUTDIR + "08_hisat/{samples}_coverage.txt", samples=SAMPLES) 
+  conda:
+    CONTAINER + "hisat2.yaml"
+  shell:
+    """
+    bam=({input.bam})
+    coverage=({output.coverage})
+    len=${{#bam[@]}}
+    for (( i=0; i<$len; i++ ))
+      do samtools coverage ${{bam[$i]}} -o ${{coverage[$i]}}
+    done
+    """
+
+rule average_coverage:
+  input:
+    coverage = expand( OUTPUTDIR + "08_hisat/{samples}_coverage.txt", samples=SAMPLES) 
+  output:
+    avcoverage = expand( OUTPUTDIR + "08_hisat/average_coverage.txt", samples=SAMPLES)
+  shell:
+    """
+      coverage_file=({input.coverage})
+      avcoverage_file=({output.avcoverage})
+      len=${{#coverage_file[@]}}
+      for (( i=0; i<$len; i++ ))
+          do file=${{coverage_file[$i]}}
+          echo $file >> $avcoverage_file
+          awk -F " " "{{SUM+=\$6}} END {{print SUM/(NR-1)}}" $file >> $avcoverage_file
+      done
+    """
 # ----------------------------------------------
 # featureCounts: read count/summarization program
 # ----------------------------------------------
@@ -89,7 +126,7 @@ rule featureCounts:
     
   input:
     annotation = REF + config["ref"]["annotation"],
-    bam = expand( OUTPUTDIR + "05_hisat/{samples}.bam", samples=SAMPLES)
+    bam = expand( OUTPUTDIR + "08_hisat/{samples}.bam", samples=SAMPLES)
 
   conda: 
     CONTAINER + "featureCounts.yaml"

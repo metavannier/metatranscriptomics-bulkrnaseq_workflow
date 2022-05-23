@@ -1,4 +1,4 @@
-# Differential Expression Workflow: RNA-seq analysis
+# Differential Expression Workflow: Metatranscriptomic analysis
 
 ## Author
 
@@ -6,14 +6,14 @@ Thomas Vannier (@metavannier), https://centuri-livingsystems.org/t-vannier/
 
 ## About
 
-This workflow performs an RNA-seq analysis from the sequencing output data to the differential expression analyses.
+This workflow performs a metatranscriptomic analysis from the sequencing output data to the differential expression analyses.
 
 You need to install [Singularity](https://github.com/hpcng/singularity/blob/master/INSTALL.md#install-golang) on your computer. This workflow also work in a slurm environment.
 
 Each snakemake rules call a specific conda environment. In this way you can easily change/add tools for each step if necessary. 
 
 3 steps for the analysis:
-- clean.smk: The quality of the raw reads are assessed using [FastQC v0.11.9 toolkit](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/). Adapters and low quality reads are trimmed using [Trimmomatic v0.39](https://academic.oup.com/bioinformatics/article/30/15/2114/2390096).
+- clean.smk: The quality of the raw reads are assessed using [FastQC v0.11.9 toolkit](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/). Adapters and low quality reads are trimmed using [Trimmomatic v0.39](https://academic.oup.com/bioinformatics/article/30/15/2114/2390096). [SortMeRNA v4.3.4](https://academic.oup.com/bioinformatics/article/28/24/3211/246053) is used to filter rRNA fragments from the reads.
 - count.smk: [HiSat2 v2.2.1](https://www.nature.com/articles/nmeth.3317) is used for mapping the raw reads to the reference genome. The expression for each gene is evaluated using featureCounts from the [Subread v2.0.1 package](https://pubmed.ncbi.nlm.nih.gov/30783653/).
 - differential_exp.smk: The low expressed genes are removed from further analysis. The raw counts are normalized and used for differential expression testing using [DESeq2 v1.28.0](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8).
 

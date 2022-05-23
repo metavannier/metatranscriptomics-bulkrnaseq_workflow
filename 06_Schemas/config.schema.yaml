@@ -27,7 +27,23 @@ properties:
       - genome
       - index
       - annotation
-
+  trimmomatic:
+    type: object
+    properties:
+      adaptaters:
+        type: string
+      leading:
+        type: integer
+      trailing:
+        type: integer
+      minlen:
+        type: integer
+    required:
+      - adaptaters
+      - leading
+      - trailing
+      - minlen
+  
   microbeannotator:
     type: object
     properties:

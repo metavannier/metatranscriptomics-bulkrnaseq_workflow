@@ -2,4 +2,4 @@ channels:
     - bioconda
 dependencies:
     - hisat2=2.2.1 # alignment for NGS data. Python3 support 
-    - samtools # samtools for compression sam to bam
+    - samtools=1.15 # samtools for compression sam to bam and to know the genome covering
