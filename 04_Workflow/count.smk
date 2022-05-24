@@ -105,6 +105,7 @@ rule average_coverage:
     coverage = expand( OUTPUTDIR + "08_hisat/{samples}_coverage.txt", samples=SAMPLES) 
   output:
     avcoverage = expand( OUTPUTDIR + "08_hisat/average_coverage.txt", samples=SAMPLES)
+  container: None
   shell:
     """
       coverage_file=({input.coverage})
@@ -122,7 +123,7 @@ rule average_coverage:
 
 rule featureCounts:
   output:
-    countmatrices = expand( OUTPUTDIR + "06_featurecounts/{samples}_count.txt", samples=SAMPLES)
+    countmatrices = expand( OUTPUTDIR + "09_featurecounts/{samples}_count.txt", samples=SAMPLES)
     
   input:
     annotation = REF + config["ref"]["annotation"],
@@ -165,13 +166,13 @@ rule cpm_filtering:
     cpm = report(OUTPUTDIR + "07_cpm/cpm_filtered.txt", caption="../report/cpm_filtered.rst", category="02 Count matrices")
 
   input:
-    expand( OUTPUTDIR + "06_featurecounts/{samples}_count.txt", samples=SAMPLES)
+    expand( OUTPUTDIR + "09_featurecounts/{samples}_count.txt", samples=SAMPLES)
     
   params:
     thresh_cpm = config["filtering"]["thresh_cpm"],
     thresh_sample = config["filtering"]["thresh_sample"],
     rmrun_list = config["filtering"]["rmrun"],
-    path = OUTPUTDIR + "06_featurecounts"
+    path = OUTPUTDIR + "09_featurecounts"
 
   conda: 
     CONTAINER + "cpm.yaml"
