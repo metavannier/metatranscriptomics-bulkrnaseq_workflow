@@ -45,6 +45,14 @@ Configure the workflow according to your needs via editing the files and reposit
 
 `snakemake  --use-conda --use-singularity --cores 10`
 
+#### On a cluster
+
+- Adapt the batch script and cluster_config.json file to run your snakemake from the working directory
+
+It will install snakemake with pip and run the workflow in the HPC:
+
+`sbatch slurm_skylake.sh`
+
 ### Step 4: Investigate results 
 
 After successful execution, you can create a self-contained interactive HTML report with all results via:
