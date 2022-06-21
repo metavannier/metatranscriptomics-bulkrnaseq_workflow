@@ -134,7 +134,8 @@ rule featureCounts:
 
   params:
     reads = config["run"]["reads"],
-    geneid = config["ref"]["geneid"]
+    geneid = config["ref"]["geneid"],
+    geneidentifier = config["ref"]["geneidentifier"]
 
   shell:
     """
@@ -143,14 +144,15 @@ rule featureCounts:
     annotation={input.annotation}
     bam=({input.bam})
     countmatrices=({output.countmatrices})
+    geneidentifier=({params.geneidentifier})
     len=${{#bam[@]}}
     if [ ${{reads}} == 'paired' ];then
       for (( i=0; i<$len; i++ ))
-        do featureCounts -T 12 -p -t exon -g ${{geneid}} -a ${{annotation}} -o ${{countmatrices[$i]}} ${{bam[$i]}}
+        do featureCounts -T 12 -p -t ${{geneidentifier}} -g ${{geneid}} -a ${{annotation}} -o ${{countmatrices[$i]}} ${{bam[$i]}}
       done
     elif [ ${{reads}} == 'unpaired' ];then
       for (( i=0; i<$len; i++ ))
-        do featureCounts -T 12 -t exon -g ${{geneid}} -a ${{annotation}} -o ${{countmatrices[$i]}} ${{bam[$i]}}
+        do featureCounts -T 12 -t ${{geneidentifier}} -g ${{geneid}} -a ${{annotation}} -o ${{countmatrices[$i]}} ${{bam[$i]}}
       done
     fi
     """
@@ -161,9 +163,9 @@ rule featureCounts:
 
 rule cpm_filtering:
   output:
-    count_df = report(OUTPUTDIR + "07_cpm/count.txt", caption="../report/count.rst", category="02 Count matrices"),
-    output_filter_count = report(OUTPUTDIR + "07_cpm/count_filtered.txt", caption="../report/count_filtered.rst", category="02 Count matrices"),
-    cpm = report(OUTPUTDIR + "07_cpm/cpm_filtered.txt", caption="../report/cpm_filtered.rst", category="02 Count matrices")
+    count_df = report(OUTPUTDIR + "10_cpm/count.txt", caption="../report/count.rst", category="02 Count matrices"),
+    output_filter_count = report(OUTPUTDIR + "10_cpm/count_filtered.txt", caption="../report/count_filtered.rst", category="02 Count matrices"),
+    cpm = report(OUTPUTDIR + "10_cpm/cpm_filtered.txt", caption="../report/cpm_filtered.rst", category="02 Count matrices")
 
   input:
     expand( OUTPUTDIR + "09_featurecounts/{samples}_count.txt", samples=SAMPLES)

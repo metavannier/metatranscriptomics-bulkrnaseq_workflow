@@ -11,12 +11,12 @@ def get_deseq2_threads(wildcards=None):
 
 rule deseq2_init:
   input:
-    cts = "05_Output/07_cpm/count_filtered.txt",
+    cts = "05_Output/10_cpm/count_filtered.txt",
     coldata = config["coldata"]
 
   output:
-    rds = "05_Output/08_deseq2_init/all.rds",
-    normalized_counts_file = report("05_Output/08_deseq2_init/normalized_counts.tsv", caption="../report/normalized_counts.rst", category="02 Count matrices")
+    rds = "05_Output/11_deseq2_init/all.rds",
+    normalized_counts_file = report("05_Output/11_deseq2_init/normalized_counts.tsv", caption="../report/normalized_counts.rst", category="02 Count matrices")
   conda:
     "../02_Container/deseq2.yaml"
 
@@ -34,15 +34,15 @@ rule deseq2_init:
 
 rule diffexp:
   input:
-    rds = "05_Output/08_deseq2_init/all.rds",
+    rds = "05_Output/11_deseq2_init/all.rds",
     rmd = "03_Script/diffexp.Rmd",
     pca = "03_Script/data_quality.R",
     coldata = config["coldata"]
   output:
-    html_report=report(OUTPUTDIR + "09_differential_expression/diffexp.html", caption="../report/diffexp.rst", category="03 Report differential expression"),
-    table=report(expand(OUTPUTDIR + "09_differential_expression/{condition.condition}_vs_{ref_level}_all_genes_stats.tsv", condition=condition.itertuples(), ref_level=ref_level), caption="../report/stat.rst", category="04 Table differential expression"),
-    sur=report(expand(OUTPUTDIR + "09_differential_expression/{condition.condition}_vs_{ref_level}_signif-up-regulated.txt", condition=condition.itertuples(), ref_level=ref_level), caption="../report/stat.rst", category="04 Table differential expression"),
-    sdr=report(expand(OUTPUTDIR + "09_differential_expression/{condition.condition}_vs_{ref_level}_signif-down-regulated.txt", condition=condition.itertuples(), ref_level=ref_level), caption="../report/stat.rst", category="04 Table differential expression")
+    html_report=report(OUTPUTDIR + "12_differential_expression/diffexp.html", caption="../report/diffexp.rst", category="03 Report differential expression"),
+    table=report(expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_all_genes_stats.tsv", condition=condition.itertuples(), ref_level=ref_level), caption="../report/stat.rst", category="04 Table differential expression"),
+    sur=report(expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_signif-up-regulated.txt", condition=condition.itertuples(), ref_level=ref_level), caption="../report/stat.rst", category="04 Table differential expression"),
+    sdr=report(expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_signif-down-regulated.txt", condition=condition.itertuples(), ref_level=ref_level), caption="../report/stat.rst", category="04 Table differential expression")
   conda:
     CONTAINER + "diffexp.yaml"
   params:

@@ -19,9 +19,11 @@ ref:
     # The Hisat index
     index: "04_index/2606217280"
     # gtf file with transcripts
-    annotation: "2606217280.gff"
+    annotation: "2606217280.gtf"
     # Gene id for the figures
     geneid: "gene_id"
+    # Gene identifier for the gtf
+    geneidentifier: "transcript"
     # Database for SortMeRNA
     ddb: "01_Reference/silva-bac-16s-id90.fasta"
 
