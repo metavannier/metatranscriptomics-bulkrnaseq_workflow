@@ -99,16 +99,16 @@ rule all:
     #### Samtools coverage: genome coverage
     # coverage = expand( OUTPUTDIR + "08_hisat/{samples}_coverage.txt", samples=SAMPLES),
     # avcoverage = expand( OUTPUTDIR + "08_hisat/average_coverage.txt", samples=SAMPLES),
-    countmatrices = expand( OUTPUTDIR + "09_featurecounts/{samples}_count.txt", samples=SAMPLES),
-    # count_df = OUTPUTDIR + "07_cpm/count.txt",
-    # output_filter_count = OUTPUTDIR + "07_cpm/count_filtered.txt",
-    # cpm = OUTPUTDIR + "07_cpm/cpm_filtered.txt",
-    # rds = "05_Output/08_deseq2_init/all.rds",
-    # normalized_counts_file = "05_Output/08_deseq2_init/normalized_counts.tsv",
-    # table=expand(OUTPUTDIR + "09_differential_expression/{condition.condition}_vs_{ref_level}_all_genes_stats.tsv", condition=condition.itertuples(), ref_level=ref_level),
-    # sur=expand(OUTPUTDIR + "09_differential_expression/{condition.condition}_vs_{ref_level}_signif-up-regulated.txt", condition=condition.itertuples(), ref_level=ref_level),
-    # sdr=expand(OUTPUTDIR + "09_differential_expression/{condition.condition}_vs_{ref_level}_signif-down-regulated.txt", condition=condition.itertuples(), ref_level=ref_level),
-    # html_report = OUTPUTDIR + "09_differential_expression/diffexp.html",
+    # countmatrices = expand( OUTPUTDIR + "09_featurecounts/{samples}_count.txt", samples=SAMPLES),
+    count_df = OUTPUTDIR + "10_cpm/count.txt",
+    output_filter_count = OUTPUTDIR + "10_cpm/count_filtered.txt",
+    cpm = OUTPUTDIR + "10_cpm/cpm_filtered.txt",
+    # rds = "05_Output/11_deseq2_init/all.rds",
+    # normalized_counts_file = "05_Output/11_deseq2_init/normalized_counts.tsv",
+    # table=expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_all_genes_stats.tsv", condition=condition.itertuples(), ref_level=ref_level),
+    # sur=expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_signif-up-regulated.txt", condition=condition.itertuples(), ref_level=ref_level),
+    # sdr=expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_signif-down-regulated.txt", condition=condition.itertuples(), ref_level=ref_level),
+    # html_report = OUTPUTDIR + "12_differential_expression/diffexp.html",
 
 # ----------------------------------------------
 # setup singularity 
