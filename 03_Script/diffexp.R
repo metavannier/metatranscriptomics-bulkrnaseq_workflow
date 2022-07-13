@@ -11,11 +11,15 @@ FCcutoff=snakemake@params[["FCcutoff"]]
 ## Produce the MA plot and volcanoplot with matrices 
 
 cat("We use ",lfcshrink_type ," lfcshrink type as adaptive t prior shrinkage estimator for ranking and visualization.\n")
-cat("The Sample of reference for the pairwise comparison is ",ref_level,".\n")
+cat("The sample of reference for the pairwise comparison is ",ref_level,".\n")
 
 # Automation of the comparisons with the reference condition established in (config.yaml for deseq2.R) 
 comparison <- resultsNames(dds)
 comparison_df <- as.data.frame(comparison)[-1,]
+# Create file for the comparison ref vs ref for snakemake wildcard
+file.create(paste("../05_Output/12_differential_expression/",ref_level,"_vs_",ref_level,"_all_genes_stats.tsv", sep=""))
+file.create(paste("../05_Output/12_differential_expression/",ref_level,"_vs_",ref_level,"_signif-down-regulated.txt", sep=""))
+file.create(paste("../05_Output/12_differential_expression/",ref_level,"_vs_",ref_level,"_signif-up-regulated.txt", sep=""))
 for (i in 1:length(comparison_df)) {
     outputname <- as.character(lapply(comparison_df[[i]], sub, pattern = "condition_", replacement = ""))
     condition <- strsplit(comparison_df[[i]], split = "_vs_")
@@ -25,14 +29,20 @@ for (i in 1:length(comparison_df)) {
     rlog_results <- lfcShrink(dds, coef = comparison_df[[i]], res=results, type=lfcshrink_type)
     # p-values and adjusted p-values
     rlog_results <- rlog_results[order(rlog_results$padj),]
-    write.table(as.data.frame(rlog_results), file= paste("../05_Output/09_differential_expression/",outputname,"_all_genes_stats.tsv", sep=""), quote = FALSE, sep = "\t")
+    write.table(as.data.frame(rlog_results), file= paste("../05_Output/12_differential_expression/",outputname,"_all_genes_stats.tsv", sep=""), quote = FALSE, sep = "\t")
 
-    ## MA-plot
+    ###############
+    ### MA-plot ###
+    ###############
+
     xlim <- c(500,5000); ylim <- c(-2,2)
     plotMA(rlog_results, xlim=xlim, ylim=ylim, main=comparison_df[[i]])
     idx <- identify(rlog_results$baseMean, rlog_results$log2FoldChange)
 
-    ## Volcano plot
+    ####################
+    ### Volcano plot ###
+    ####################
+    
     FC <- log2(FCcutoff)
     p <- pCutoff
 
@@ -49,24 +59,30 @@ for (i in 1:length(comparison_df)) {
     keyvals <- rep('grey75', nrow(rlog_results))
     names(keyvals) <- rep('Non marker genes', nrow(rlog_results))
 
-    # keyvals.shape <- rep(1, nrow(rlog_results))
-    # names(keyvals.shape) <- rep('Non marker genes', nrow(rlog_results))
+    ## To inlight if you don't have to visualize marker genes
+    keyvals.shape <- rep(1, nrow(rlog_results))
+    names(keyvals.shape) <- rep('Non marker genes', nrow(rlog_results))
 
-    # keyvals[which(abs(rlog_results$log2FoldChange) > FC & rlog_results$padj > p)] <- 'grey50'
-    # names(keyvals)[which(abs(rlog_results$log2FoldChange) > FC & rlog_results$padj > p)] <- 'log2FoldChange'
+    keyvals[which(abs(rlog_results$log2FoldChange) > FC & rlog_results$padj > p)] <- 'grey50'
+    names(keyvals)[which(abs(rlog_results$log2FoldChange) > FC & rlog_results$padj > p)] <- 'log2FoldChange'
 
-    # keyvals[which(abs(rlog_results$log2FoldChange) < FC & rlog_results$padj < p)] <- 'grey25'
-    # names(keyvals)[which(abs(rlog_results$log2FoldChange)  < FC & rlog_results$padj < p)] <- '-Log10Q'
+    keyvals[which(abs(rlog_results$log2FoldChange) < FC & rlog_results$padj < p)] <- 'grey25'
+    names(keyvals)[which(abs(rlog_results$log2FoldChange)  < FC & rlog_results$padj < p)] <- '-Log10Q'
 
-    # keyvals[which(rlog_results$log2FoldChange < -FC & rlog_results$padj < p)] <- 'blue2'
-    # names(keyvals)[which(rlog_results$log2FoldChange  < -FC & rlog_results$padj < p)] <- 'Signif. down-regulated'
+    keyvals[which(rlog_results$log2FoldChange < -FC & rlog_results$padj < p)] <- 'blue2'
+    names(keyvals)[which(rlog_results$log2FoldChange  < -FC & rlog_results$padj < p)] <- 'Signif. down-regulated'
+    ##
+
     sdr <- subset(rlog_results, (rlog_results$log2FoldChange  < -FC) & (rlog_results$padj < p))
-    write.table(as.data.frame(sdr), file= paste("../05_Output/09_differential_expression/",outputname,"_signif-down-regulated.txt", sep=""), quote = FALSE, sep = "\t")
+    write.table(as.data.frame(sdr), file= paste("../05_Output/12_differential_expression/",outputname,"_signif-down-regulated.txt", sep=""), quote = FALSE, sep = "\t")
 
-    # keyvals[which(rlog_results$log2FoldChange > FC & rlog_results$padj < p)] <- 'red2'
-    # names(keyvals)[which(rlog_results$log2FoldChange > FC & rlog_results$padj < p)] <- 'Signif. up-regulated'
+    ## To inlight if you don't have to visualize marker genes
+    keyvals[which(rlog_results$log2FoldChange > FC & rlog_results$padj < p)] <- 'red2'
+    names(keyvals)[which(rlog_results$log2FoldChange > FC & rlog_results$padj < p)] <- 'Signif. up-regulated'
+    ##
+
     sur <- subset(rlog_results, (rlog_results$log2FoldChange > FC) & (rlog_results$padj < p))
-    write.table(as.data.frame(sur), file= paste("../05_Output/09_differential_expression/",outputname,"_signif-up-regulated.txt", sep=""), quote = FALSE, sep = "\t")
+    write.table(as.data.frame(sur), file= paste("../05_Output/12_differential_expression/",outputname,"_signif-up-regulated.txt", sep=""), quote = FALSE, sep = "\t")
 
     # Inlight the marker genes
     if(length(gene_name_list)!=0){
@@ -115,7 +131,7 @@ for (i in 1:length(comparison_df)) {
     borderWidth = 0.7,
     borderColour = 'black')    
     plot(volcanoplot_padj)
-    pdf(paste("../05_Output/09_differential_expression/",outputname,"_volcano.pdf", sep=""))
+    pdf(paste("../05_Output/12_differential_expression/",outputname,"_volcano.pdf", sep=""))
     print(volcanoplot_padj)
     dev.off()
     # Tell if the list of interest genes have differential expression 
@@ -135,16 +151,41 @@ for (i in 1:length(comparison_df)) {
             }
         }
     }
+
+    ################################
+    ### Diverging Lollipop Chart ###
+    ################################
+
+    ## Dataframe for ggplot2
+    # Read the list of ko identifier of interest
+    ko_list_read <- read.delim(paste("../",snakemake@input[["ko_list"]],sep=""), header=TRUE, comment.char="#", quote="")
+    # Read the file with the annotation corresponding to the ko identifier of interest
+    annotationfile <- read.delim(snakemake@input[["annotationfile"]], header=TRUE, comment.char="#", quote="")
+    annotationfile2 = annotationfile[,c("query_id","ko_number")]
+    # Merge the annotation file with the list of ko identifier of interest
+    annotationfile <- inner_join(annotationfile2, ko_list_read)
+    # Merge the annotation file with statistics result of differential expression
+    # Rowname as first column "query_id" for rlog_results
+    rlog_results <- data.frame(rlog_results)
+    rlog_results <- tibble::rownames_to_column(rlog_results, "query_id")
+    rlog_results <- rlog_results[,c("query_id","log2FoldChange","padj")]
+    annotationfile[,"query_id"] <- as.character(annotationfile[,"query_id"])
+    annotation_rlog_result <- inner_join(annotationfile, rlog_results)
+    write.table(as.data.frame(annotation_rlog_result), file= paste("../05_Output/12_differential_expression/test.txt", sep=""), quote = FALSE, sep = "\t")
+    # LA faire le plot
 }
 
 ## @knitr toppadj
 
+############################
+### Top adjusted p-value ###
+############################
+
 mutant_level=snakemake@params[["mutant_level"]]
-stat_file=paste("../05_Output/09_differential_expression/",mutant_level,"_vs_",ref_level,"_all_genes_stats.tsv", sep="")
+stat_file=paste("../05_Output/12_differential_expression/",mutant_level,"_vs_",ref_level,"_all_genes_stats.tsv", sep="")
 nbpval=snakemake@params[["nbpval"]]
 mutant_level_file <- read_delim(stat_file, "\t", escape_double = FALSE, trim_ws = TRUE)
 
-# Top adjusted p-value
 top_adjpval <- mutant_level_file[1:nbpval,1]
 # Keep the normalized count values of these genes
 dds <- readRDS(RDS)

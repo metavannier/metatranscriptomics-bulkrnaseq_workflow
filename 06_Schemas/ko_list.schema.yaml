@@ -1,0 +1,23 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+description: an entry in the ko sheet
+properties:
+    ko:
+        type: string
+        description: ko id
+    name:
+        type: string
+        description: gene name
+    description:
+        type: string
+        description: function associated
+    metabolism:
+        type: string
+        description: Metabolism 
+
+
+required:
+    - ko_number
+    - name
+    - description
+    - metabolism

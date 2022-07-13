@@ -23,6 +23,7 @@ rule deseq2_init:
   params:
     project = expand("{samples.project}",samples=samples.itertuples()),
     samples = expand("{samples.sample}",samples=samples.itertuples()),
+    condition = expand("{samples.condition}",samples=samples.itertuples()),
     ref_level = config["diffexp"]["ref_level"],
     rmproj_list = config["filtering"]["rmproj"]
 
@@ -31,20 +32,47 @@ rule deseq2_init:
   script:
     "../03_Script/deseq2.R"
 
+# ----------------------------------------------
+# Change the gene id by the annotation id 
+# ----------------------------------------------
+
+# rule annotation_id:
+#   input:
+#     normalized_counts_file = "05_Output/11_deseq2_init/normalized_counts.tsv",
+#     annotationfile = REF + config["microbeannotator"]["annotationfolder"] + "/annotation_results/" + config["microbeannotator"]["protfiles"] + ".annot"
+
+
+#   output:
+#     normalized_counts_annotation_file = report("05_Output/11_deseq2_init/normalized_annotation_counts.tsv", caption="../report/normalized_counts.rst", category="02 Count matrices")
+
+#   shell:
+#     """
+#     chmod +x 03_Script/gene_id_correspondence.sh
+#     03_Script/gene_id_correspondence.sh {input.normalized_counts_file} {input.annotationfile} {output.normalized_counts_annotation_file}
+#     """
+
+# ----------------------------------------------
+# Statistacal analyses and production of the report with Rmarkdown
+# ----------------------------------------------
 
 rule diffexp:
   input:
     rds = "05_Output/11_deseq2_init/all.rds",
     rmd = "03_Script/diffexp.Rmd",
     pca = "03_Script/data_quality.R",
-    coldata = config["coldata"]
+    coldata = config["coldata"],
+    annotationfile = REF + config["microbeannotator"]["annotationfolder"] + "/annotation_results/" + config["microbeannotator"]["protfiles"] + ".annot",
+    ko_list = config["ko_list"]
+
   output:
-    html_report=report(OUTPUTDIR + "12_differential_expression/diffexp.html", caption="../report/diffexp.rst", category="03 Report differential expression"),
+    html_report=report(expand(OUTPUTDIR + config["diffexp"]["html_report"]), caption="../report/diffexp.rst", category="03 Report differential expression"),
     table=report(expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_all_genes_stats.tsv", condition=condition.itertuples(), ref_level=ref_level), caption="../report/stat.rst", category="04 Table differential expression"),
     sur=report(expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_signif-up-regulated.txt", condition=condition.itertuples(), ref_level=ref_level), caption="../report/stat.rst", category="04 Table differential expression"),
     sdr=report(expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_signif-down-regulated.txt", condition=condition.itertuples(), ref_level=ref_level), caption="../report/stat.rst", category="04 Table differential expression")
+  
   conda:
     CONTAINER + "diffexp.yaml"
+  
   params:
     pca_labels=config["pca"]["labels"],
     ref_level = config["diffexp"]["ref_level"],
@@ -54,7 +82,9 @@ rule diffexp:
     nbpval = config["diffexp"]["nbpval"],
     FCcutoff=config["diffexp"]["FCcutoff"],
     pCutoff=config["diffexp"]["pCutoff"],
+  
   message: 
     "Run the differential expression analyses"  
+  
   script:
     SCRIPTDIR + "diffexp_reports_compilation.R"

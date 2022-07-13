@@ -5,7 +5,7 @@ channels :
     - defaults
 dependencies :
     - r-base =4.0
-    - r-dplyr =1.0.7
+    - r-dplyr =1.0.9
     - r-patchwork =1.1.1
     # Report snakemake
     - conda-forge::jinja2=2.11.2

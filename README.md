@@ -30,7 +30,7 @@ We would be pleased if you use this workflow and participate in its improvement.
 Configure the workflow according to your needs via editing the files and repositories:
 - 00_RawData need the single or pair-end fastq file of each run to analyse
 - 01_Reference the fasta file and gff/gtf of your reference genome for the mapping step
-- [sample.tsv](/sample.tsv), [coldata.tsv](/coldata.tsv) and [condition.tsv](/condition.tsv) to indicate the samples, run, condition, etc. for the analyse.
+- [sample.tsv](/sample.tsv), [coldata.tsv](/coldata.tsv), [condition.tsv](/condition.tsv) and [ko_list.tsv](/ko_list.tsv) to indicate the samples, run, condition, list of ko etc. for the analyse.
 - [config.yaml](/config.yaml) indicating the parameters to use.
 
 ### Step 3: Execute workflow

@@ -56,7 +56,7 @@ if(length(gene_name_list)!=0){
     ggtitle(gene_name_list[[i]]) +
     theme(plot.title = element_text(hjust = 0.5))
     plot(ggplot)
-    pdf(paste("../05_Output/09_differential_expression/",gene_name,"_plot.pdf", sep=""))
+    pdf(paste("../05_Output/12_differential_expression/",gene_name,"_plot.pdf", sep=""))
     print(ggplot)
     dev.off()
   }

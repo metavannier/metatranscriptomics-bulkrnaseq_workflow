@@ -4,11 +4,11 @@
 
 rule MicrobeAnnotator_build:
   output:
-    microbeannotatordb = config["microbeannotator"]["folder"] + "/microbeannotator.db",
-    conversiondb = config["microbeannotator"]["folder"] + "/conversion.db"
+    microbeannotatordb = REF + config["microbeannotator"]["folder"] + "/microbeannotator.db",
+    conversiondb = REF + config["microbeannotator"]["folder"] + "/conversion.db"
 
   params:
-    foldermicrobeannotator = config["microbeannotator"]["folder"],
+    foldermicrobeannotator = REF + config["microbeannotator"]["folder"],
     method = config["microbeannotator"]["method"],
     threads = config["microbeannotator"]["threads"],
     lightversion = config["microbeannotator"]["lightversion"]
@@ -37,12 +37,12 @@ rule MicrobeAnnotator_annotation:
     MicrobeAnnotatorannotation = config["microbeannotator"]["annotationfolder"] + "/mockfile.txt",
 
   params:
-    protfiles = config["microbeannotator"]["protfiles"],
-    annotationfolder = config["microbeannotator"]["annotationfolder"],
+    protfiles = REF + config["microbeannotator"]["protfiles"],
+    annotationfolder = REF + config["microbeannotator"]["annotationfolder"],
     method = config["microbeannotator"]["method"],
     threads = config["microbeannotator"]["threads"],
     processes = config["microbeannotator"]["processes"],
-    foldermicrobeannotator = config["microbeannotator"]["folder"],
+    foldermicrobeannotator = REF + config["microbeannotator"]["folder"],
     
   conda: 
     CONTAINER + "microbeannotator.yaml"

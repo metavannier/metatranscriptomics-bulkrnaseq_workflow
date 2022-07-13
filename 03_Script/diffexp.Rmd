@@ -1,6 +1,6 @@
 ---
-title: "Level of expression of Actin and Acting Binding Proteins in Saccharomyces cerevisiae cells"
-subtitle: "Bioinformatics project | IBDM | Micaela Boiero Sanders"
+title: "Transcriptomic responses of diazotrophs under climate change"
+subtitle: "Bioinformatics project | MIO | Alba Filella & Mar Benavides"
 author:
 - Thomas Vannier | CENTURI Multi-Engineering Platform
 date: "`r format(Sys.time(), '%d %B %Y')`"
@@ -32,6 +32,7 @@ library(DT)
 library(pcaExplorer)
 #library(ashr)
 library(EnhancedVolcano)
+library(dplyr)
 ```
 
 [//]: # "Load the various chunks in the various files"
@@ -112,4 +113,3 @@ For each comparison we listed the target genes with differential expression
 ```{r toppadj, echo=FALSE, results = "asis", fig.width=9, fig.height=7, message=FALSE, warning = FALSE}
 <<toppadj>>
 ```
-
