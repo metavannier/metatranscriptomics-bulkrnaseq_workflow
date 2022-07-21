@@ -1,0 +1,1 @@
+Count matrix after removing the low expressed genes from the cpm matrix count (see description of the last one for more detail about the filtering)

@@ -1,4 +1,1 @@
-This html page present a differential expression analyses obtain with the pre-processing workflow and clustering by Seurat.
-
-Finding differentially expressed features 
-
+Report of the differential expression analyses including data visualization and differential expression analysis between samples.

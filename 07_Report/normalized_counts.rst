@@ -1,0 +1,3 @@
+Normalized counts matrix from DESeq2 performed by the median of ratios method of normalization.
+
+NOTE: DESeq2 doesn’t actually use normalized counts, rather it uses the raw counts and models the normalization inside the Generalized Linear Model (GLM). These normalized counts will be useful for downstream visualization of results, but cannot be used as input to DESeq2 or any other tools that peform differential expression analysis which use the negative binomial model.

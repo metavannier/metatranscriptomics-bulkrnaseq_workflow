@@ -1,6 +1,6 @@
 ---
-title: "Level of expression of Actin and Acting Binding Proteins in Saccharomyces cerevisiae cells"
-subtitle: "Bioinformatics project | IBDM | Micaela Boiero Sanders"
+title: "Transcriptomic responses of diazotrophs under climate change"
+subtitle: "Bioinformatics project | MIO | Alba Filella & Mar Benavides"
 author:
 - Thomas Vannier | CENTURI Multi-Engineering Platform
 date: "`r format(Sys.time(), '%d %B %Y')`"
@@ -32,6 +32,7 @@ library(DT)
 library(pcaExplorer)
 #library(ashr)
 library(EnhancedVolcano)
+library(dplyr)
 ```
 
 [//]: # "Load the various chunks in the various files"
@@ -91,7 +92,7 @@ We plot the normalized count value of a gene of interest to compare the expressi
 In this section we execute an analysis of the differentially expressed genes 
 between the different conditions.
 
-## MA plot and Volcano plot
+## MA plot and Volcano plot and Lollipop Chart
 
 MA plot representing the log2 fold changes attributable to a given variable over
 the mean of normalized counts for each conditions. 
@@ -112,4 +113,3 @@ For each comparison we listed the target genes with differential expression
 ```{r toppadj, echo=FALSE, results = "asis", fig.width=9, fig.height=7, message=FALSE, warning = FALSE}
 <<toppadj>>
 ```
-

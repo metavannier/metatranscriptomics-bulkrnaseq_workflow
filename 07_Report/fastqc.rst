@@ -1,0 +1,1 @@
+Report with the row data quality generated after the cleaning step with trimomatic

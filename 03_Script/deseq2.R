@@ -18,36 +18,32 @@ if (snakemake@threads > 1) {
 # Loading the parameters
 project=snakemake@params[["project"]]
 samples=snakemake@params[["samples"]]
+condition=snakemake@params[["condition"]]
 ref_level=snakemake@params[["ref_level"]]
 normalized_counts_file=snakemake@output[["normalized_counts_file"]]
 
 # Rename column name of the count matrix as coldata
-# colData and countData must have the same sample order
 cts <- as.matrix(read.table(snakemake@input[["cts"]], header=T, row.names = 1))
+cts_ordered <- matrix(, nrow = length(rownames(cts)), ncol = length(project))
+colnames(cts_ordered) <- condition
+for (i in 1:length(project)) {
+  colnames(cts) <- lapply(colnames(cts), sub, pattern = paste(project[[i]],"_",sep=""), replacement = "")
+  colnames(cts) <- lapply(colnames(cts), sub, pattern = paste("_",samples[[i]],"\\.bam",sep=""), replacement = "")
+}
+colnames(cts) <- lapply(colnames(cts), sub, pattern = paste("\\.",sep=""), replacement = "-")
+# Reorder the column as sample.tsv 
+genomic_idx <-  match(colnames(cts_ordered),colnames(cts))
+cts  <- cts[,genomic_idx]
 
-## Pour modifier nom de colonne. A modifier pour la matrice.
-# for (i in 1:length(project)) {
-#   cts[1,] <- lapply(cts[1,], sub, pattern = paste(project[[i]],"_",sep=""), replacement = "")
-#   cts[1,] <- lapply(cts[1,], sub, pattern = paste("_",samples[[i]],"\\.bam",sep=""), replacement = "")
-# }
-# Format colData and countData for DESeq2
-# cts2 <- cts[,-1]
-# rownames(cts2) <- cts[,1]
-# cts <- cts2[-1,]
-# colnames(cts) <- cts2[1,]
-
+# Metadata for deseq2
+# coldata.tsv and sample.tsv need the same order of sample
 coldata_read <- read.delim(snakemake@input[["coldata"]], header=TRUE, comment.char="#", quote="")
-
-#### AJOUT pour avoir la même colnames pour la matrice de comptage ####
-#### IMPORTANT de regarder si les echantillons sont bien dans le bon ordre avant #####
-colnames(cts) <- coldata_read[,1]
-
-
 coldata <- coldata_read[,-1]
 rownames(coldata) <- coldata_read[,1]
 coldata$condition <- factor(coldata_read$condition)
 coldata$type <- factor(coldata_read$type)
 
+# Remove samples outlier
 rmproj_list = as.list(strsplit(snakemake@params[["rmproj_list"]], ",")[[1]])
 
 if(length(rmproj_list)!=0){
@@ -73,7 +69,7 @@ if (all(colnames(cts) %in% rownames(coldata)) & all(colnames(cts) == rownames(co
 # Specifying the reference level
 dds$condition <- relevel(dds$condition, ref = ref_level)
 
-# DESeq : Normalization and preprocessing (counts divided by sample-specific size factors
+# DESeq: Normalization and preprocessing (counts divided by sample-specific size factors
 # determined by median ratio of gene counts relative to geometric mean per gene)
 dds <- DESeq(dds, parallel=parallel)
 # To save the object in a file for later use

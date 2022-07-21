@@ -12,6 +12,7 @@ library(edgeR)
 # Browse the list of file count to produce a matrix
 file_list=list.files(snakemake@params[["path"]],pattern = "_count.txt$", full.names=TRUE)
 output_count=snakemake@output[["count_df"]]
+output_allcpm=snakemake@output[["output_allcpm"]]
 output_cpm=snakemake@output[["cpm"]]
 output_filter_count=snakemake@output[["output_filter_count"]]
 
@@ -46,12 +47,14 @@ cpm <- cpm(mtx_total_count)
 df_cpm <- as.data.frame(cpm)
 df_cpm <- cbind(Gene_id=dataframe_total_count[-1,1], df_cpm)
 
-## Remove row with n value < cpm
+
+## Keep row with n value > cpm
 df_cpm[] <- lapply(df_cpm, function(x) {
     if(is.factor(x)) as.numeric(as.character(x)) else x
 })
 # Dataframe with the cpm filtrated
 df_cpm_filter <- data.frame()
+df_cpm_nofilter <- data.frame()
 for (j in 1:nrow(df_cpm)) {
     flag = 0
     for (k in 2:ncol(df_cpm)) {

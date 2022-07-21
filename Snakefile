@@ -1,5 +1,3 @@
-taxo_table_tsv
-
 # Docker container based on a minimal Ubuntu installation that includes conda-forge's mambaforge installer.
 container: "docker://condaforge/mambaforge"
 
@@ -21,6 +19,9 @@ validate(coldata, schema="06_Schemas/coldata.schema.yaml")
 
 condition = pd.read_table(config["condition"]).set_index(["condition"], drop=False)
 validate(coldata, schema="06_Schemas/condition.schema.yaml")
+
+ko_list = pd.read_table(config["ko_list"]).set_index(["ko_number", "name", "description", "metabolism"], drop=False)
+validate(ko_list, schema="06_Schemas/ko_list.schema.yaml")
 
 ##### Set variables ####
 ROOTDIR = os.getcwd()
@@ -45,9 +46,9 @@ DB_classifier = config["taxonomy"]["database_classified"]
 ref_level = config["diffexp"]["ref_level"]
 genome = config["ref"]["genome"]
 index = config["ref"]["index"]
-annotation = config["ref"]["annotation"]
-microbeannotatordb = config["microbeannotator"]["folder"]
-annotationfolder = config["microbeannotator"]["annotationfolder"]
+annotation = REF + config["ref"]["annotation"]
+microbeannotatordb = REF + config["microbeannotator"]["folder"]
+annotationfolder = REF + config["microbeannotator"]["annotationfolder"]
 RUN_ID = expand("{samples.project}_{samples.condition}_{samples.sample}",samples=samples.itertuples())
 
 rule all:
@@ -70,7 +71,7 @@ rule all:
     #### Qiime import
     # q2_import = OUTPUTDIR + "05_qiime_import/" + PROJ + "-demux-paired-end.qza",
     # primer = OUTPUTDIR + "05_qiime_import/" + PROJ + "-PE-demux-noprimer.qzv",
-    # table = OUTPUTDIR + "06_dada2/" + PROJ + "-table-dada2.qza",
+    # table1 = OUTPUTDIR + "06_dada2/" + PROJ + "-table-dada2.qza",
     # rep = OUTPUTDIR + "06_dada2/" + PROJ + "-rep-seqs-dada2.qza",
     # stats = OUTPUTDIR + "06_dada2/" + PROJ + "-dada2-stats.qza",
     # filterrep = OUTPUTDIR + "06_dada2/" + PROJ + "-rep-filtered-seqs-dada2.qza",
@@ -98,19 +99,21 @@ rule all:
     # index7 = expand( OUTPUTDIR + "{index}.7.ht2", index=index),
     # index8 = expand( OUTPUTDIR + "{index}.8.ht2", index=index),
     # bam = expand( OUTPUTDIR + "08_hisat/{samples}.bam", samples=SAMPLES),
-    #### Samtools coverage: genome coverage
+    # #### Samtools coverage: genome coverage
     # coverage = expand( OUTPUTDIR + "08_hisat/{samples}_coverage.txt", samples=SAMPLES),
     # avcoverage = expand( OUTPUTDIR + "08_hisat/average_coverage.txt", samples=SAMPLES),
     # countmatrices = expand( OUTPUTDIR + "09_featurecounts/{samples}_count.txt", samples=SAMPLES),
-    count_df = OUTPUTDIR + "10_cpm/count.txt",
-    output_filter_count = OUTPUTDIR + "10_cpm/count_filtered.txt",
-    cpm = OUTPUTDIR + "10_cpm/cpm_filtered.txt",
+    # #### To reload if an other reference 
+    # count_df = OUTPUTDIR + "10_cpm/count.txt",
+    # output_filter_count = OUTPUTDIR + "10_cpm/count_filtered.txt",
+    # cpm = OUTPUTDIR + "10_cpm/cpm_filtered.txt",
     # rds = "05_Output/11_deseq2_init/all.rds",
     # normalized_counts_file = "05_Output/11_deseq2_init/normalized_counts.tsv",
-    # table=expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_all_genes_stats.tsv", condition=condition.itertuples(), ref_level=ref_level),
-    # sur=expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_signif-up-regulated.txt", condition=condition.itertuples(), ref_level=ref_level),
-    # sdr=expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_signif-down-regulated.txt", condition=condition.itertuples(), ref_level=ref_level),
-    # html_report = OUTPUTDIR + "12_differential_expression/diffexp.html",
+    # normalized_counts_annotation_file = "05_Output/11_deseq2_init/normalized_annotation_counts.tsv",
+    table=expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_all_genes_stats.tsv", condition=condition.itertuples(), ref_level=ref_level),
+    sur=expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_signif-up-regulated.txt", condition=condition.itertuples(), ref_level=ref_level),
+    sdr=expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_signif-down-regulated.txt", condition=condition.itertuples(), ref_level=ref_level),
+    html_report=expand(OUTPUTDIR + config["diffexp"]["html_report"]),
 
 # ----------------------------------------------
 # setup singularity 
@@ -124,7 +127,7 @@ rule all:
 # setup report
 # ----------------------------------------------
 
-report: "report/workflow.rst"
+report: "07_Report/workflow.rst"
 
 # ----------------------------------------------
 # Impose rule order for the execution of the workflow 
