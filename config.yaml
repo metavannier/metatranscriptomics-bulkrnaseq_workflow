@@ -123,4 +123,4 @@ diffexp:
     # qvalue threshold
     pCutoff: 0.01
     # Foldchange threshold (not in log base 2)
-    FCcutoff: 2
+    FCcutoff: 1.5

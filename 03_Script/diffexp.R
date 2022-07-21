@@ -20,6 +20,8 @@ comparison_df <- as.data.frame(comparison)[-1,]
 file.create(paste("../05_Output/12_differential_expression/",ref_level,"_vs_",ref_level,"_all_genes_stats.tsv", sep=""))
 file.create(paste("../05_Output/12_differential_expression/",ref_level,"_vs_",ref_level,"_signif-down-regulated.txt", sep=""))
 file.create(paste("../05_Output/12_differential_expression/",ref_level,"_vs_",ref_level,"_signif-up-regulated.txt", sep=""))
+file.create(paste("../05_Output/12_differential_expression/",ref_level,"_vs_",ref_level,"_metabolic_marker_genes.txt", sep=""))
+
 for (i in 1:length(comparison_df)) {
     outputname <- as.character(lapply(comparison_df[[i]], sub, pattern = "condition_", replacement = ""))
     condition <- strsplit(comparison_df[[i]], split = "_vs_")
@@ -156,7 +158,7 @@ for (i in 1:length(comparison_df)) {
     ### Diverging Lollipop Chart ###
     ################################
 
-    ## Dataframe for ggplot2
+    ## Dataframe for ggplot
     # Read the list of ko identifier of interest
     ko_list_read <- read.delim(paste("../",snakemake@input[["ko_list"]],sep=""), header=TRUE, comment.char="#", quote="")
     # Read the file with the annotation corresponding to the ko identifier of interest
@@ -171,8 +173,46 @@ for (i in 1:length(comparison_df)) {
     rlog_results <- rlog_results[,c("query_id","log2FoldChange","padj")]
     annotationfile[,"query_id"] <- as.character(annotationfile[,"query_id"])
     annotation_rlog_result <- inner_join(annotationfile, rlog_results)
-    write.table(as.data.frame(annotation_rlog_result), file= paste("../05_Output/12_differential_expression/test.txt", sep=""), quote = FALSE, sep = "\t")
-    # LA faire le plot
+
+    sign<-NULL
+    for (i in 1:nrow(annotation_rlog_result)){
+        if (is.na(annotation_rlog_result$padj[i])){
+            annotation_rlog_result$padj[i] = 1
+        }
+        if (annotation_rlog_result$log2FoldChange[i] < -FC & annotation_rlog_result$padj[i] < p){
+            sign[i] <- "Signif. down-regulated"
+        }
+        if (annotation_rlog_result$log2FoldChange[i] > FC & annotation_rlog_result$padj[i] < p){
+            sign[i] <- "Signif. up-regulated"
+        }
+        if (annotation_rlog_result$log2FoldChange[i] < FC & annotation_rlog_result$log2FoldChange[i] > -FC & annotation_rlog_result$padj[i] < p){
+            sign[i] <- "N.S."
+        }
+        else if (annotation_rlog_result$padj[i] > p){
+            sign[i] <- "N.S."
+        }
+    }
+    annotation_rlog_result$sign <- sign
+    # Write the file with the annotation corresponding to the ko identifier of interest
+    write.table(as.data.frame(annotation_rlog_result), file= paste("../05_Output/12_differential_expression/",outputname,"_metabolic_marker_genes.txt", sep=""), quote = FALSE, sep = "\t")
+    annotation_rlog_result$ko_name <- paste(annotation_rlog_result$ko_number, annotation_rlog_result$name, sep=": ")
+    # Plot the dataframe with ggplot
+    lollipop=ggplot(data=annotation_rlog_result, aes(x = ko_name, y = log2FoldChange,xend=ko_name,yend=0, col=sign)) +
+    geom_hline(yintercept = 0) +
+    geom_point(size=2) +
+    geom_segment() +
+    facet_grid(metabolism ~ .,scales = "free_y",space = "free_y") +
+    coord_flip() +
+    theme_bw() +
+    ylab("log2 Fold Change") +
+    xlab(NULL) +
+    theme(legend.position = "bottom",legend.direction = "vertical", strip.text.y = element_text(size=7, face="bold", angle = 0),axis.text=element_text(size=unit(6,"pt")),title = element_text(hjust = 0.5)) +
+    scale_color_manual(values=c("grey75","blue2","red2"),name="legend:") +
+    labs(title=outputname)
+    plot(lollipop)
+    pdf(paste("../05_Output/12_differential_expression/",outputname,"_lollipop.pdf", sep=""),width=10, height=12)
+    print(lollipop)
+    dev.off()
 }
 
 ## @knitr toppadj

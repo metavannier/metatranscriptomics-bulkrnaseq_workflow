@@ -92,7 +92,7 @@ We plot the normalized count value of a gene of interest to compare the expressi
 In this section we execute an analysis of the differentially expressed genes 
 between the different conditions.
 
-## MA plot and Volcano plot
+## MA plot and Volcano plot and Lollipop Chart
 
 MA plot representing the log2 fold changes attributable to a given variable over
 the mean of normalized counts for each conditions. 

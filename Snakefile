@@ -71,7 +71,7 @@ rule all:
     #### Qiime import
     # q2_import = OUTPUTDIR + "05_qiime_import/" + PROJ + "-demux-paired-end.qza",
     # primer = OUTPUTDIR + "05_qiime_import/" + PROJ + "-PE-demux-noprimer.qzv",
-    # table = OUTPUTDIR + "06_dada2/" + PROJ + "-table-dada2.qza",
+    # table1 = OUTPUTDIR + "06_dada2/" + PROJ + "-table-dada2.qza",
     # rep = OUTPUTDIR + "06_dada2/" + PROJ + "-rep-seqs-dada2.qza",
     # stats = OUTPUTDIR + "06_dada2/" + PROJ + "-dada2-stats.qza",
     # filterrep = OUTPUTDIR + "06_dada2/" + PROJ + "-rep-filtered-seqs-dada2.qza",
@@ -99,11 +99,11 @@ rule all:
     # index7 = expand( OUTPUTDIR + "{index}.7.ht2", index=index),
     # index8 = expand( OUTPUTDIR + "{index}.8.ht2", index=index),
     # bam = expand( OUTPUTDIR + "08_hisat/{samples}.bam", samples=SAMPLES),
-    #### Samtools coverage: genome coverage
+    # #### Samtools coverage: genome coverage
     # coverage = expand( OUTPUTDIR + "08_hisat/{samples}_coverage.txt", samples=SAMPLES),
     # avcoverage = expand( OUTPUTDIR + "08_hisat/average_coverage.txt", samples=SAMPLES),
     # countmatrices = expand( OUTPUTDIR + "09_featurecounts/{samples}_count.txt", samples=SAMPLES),
-    #### To reload if an other reference 
+    # #### To reload if an other reference 
     # count_df = OUTPUTDIR + "10_cpm/count.txt",
     # output_filter_count = OUTPUTDIR + "10_cpm/count_filtered.txt",
     # cpm = OUTPUTDIR + "10_cpm/cpm_filtered.txt",
@@ -127,7 +127,7 @@ rule all:
 # setup report
 # ----------------------------------------------
 
-report: "report/workflow.rst"
+report: "07_Report/workflow.rst"
 
 # ----------------------------------------------
 # Impose rule order for the execution of the workflow 

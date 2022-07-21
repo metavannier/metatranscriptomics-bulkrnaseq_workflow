@@ -163,9 +163,9 @@ rule featureCounts:
 
 rule cpm_filtering:
   output:
-    count_df = report(OUTPUTDIR + "10_cpm/count.txt", caption="../report/count.rst", category="02 Count matrices"),
-    output_filter_count = report(OUTPUTDIR + "10_cpm/count_filtered.txt", caption="../report/count_filtered.rst", category="02 Count matrices"),
-    cpm = report(OUTPUTDIR + "10_cpm/cpm_filtered.txt", caption="../report/cpm_filtered.rst", category="02 Count matrices")
+    count_df = report(OUTPUTDIR + "10_cpm/count.txt", caption="../07_Report/count.rst", category="02 Count matrices"),
+    output_filter_count = report(OUTPUTDIR + "10_cpm/count_filtered.txt", caption="../07_Report/count_filtered.rst", category="02 Count matrices"),
+    cpm = report(OUTPUTDIR + "10_cpm/cpm_filtered.txt", caption="../07_Report/cpm_filtered.rst", category="02 Count matrices")
 
   input:
     expand( OUTPUTDIR + "09_featurecounts/{samples}_count.txt", samples=SAMPLES)
