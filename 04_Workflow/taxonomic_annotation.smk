@@ -26,7 +26,7 @@ rule get_stats:
   input:
     q2_primerRM = OUTPUTDIR + "05_qiime_import/" + PROJ + "-demux-paired-end.qza",
   output:
-    primer = report(OUTPUTDIR + "05_qiime_import/" + PROJ + "-PE-demux-noprimer.qzv", caption = ROOTDIR + "/07_Report/rawsum.rst", category="02 reads report"),
+    primer = report(OUTPUTDIR + "05_qiime_import/" + PROJ + "-PE-demux-noprimer.qzv", caption = ROOTDIR + "/07_Report/rawsum.rst", category="02 Truncation information"),
   conda: 
     ROOTDIR + "/02_Container/qiime2.yaml"
   shell: 
@@ -159,7 +159,7 @@ rule gen_tax:
         sklearn = OUTPUTDIR + "07_taxonomy/" + PROJ + "-tax_sklearn.qza"
     output:
         table_tax = OUTPUTDIR + "07_taxonomy/taxonomy.tsv",
-        table_tax_filtered = report(OUTPUTDIR + "07_taxonomy/taxonomy_filtered.tsv", caption = ROOTDIR + "/07_Report/tax.rst", category="04 taxonomy"),
+        table_tax_filtered = report(OUTPUTDIR + "07_taxonomy/taxonomy_filtered.tsv", caption = ROOTDIR + "/07_Report/tax.rst", category="04 Taxonomy"),
     conda:
         ROOTDIR + "/02_Container/qiime2.yaml"
     params:
@@ -178,9 +178,9 @@ rule stats:
         stats = OUTPUTDIR + "06_dada2/" + PROJ + "-dada2-stats.qza",
         taxafiltertable = OUTPUTDIR + "07_taxonomy/" + PROJ + "-taxa-table-filtered-dada2.qza",
     output:
-        rep_viz = report(OUTPUTDIR + "07_taxonomy/" + PROJ + "-rep-filtered-seqs-taxa-dada2.qzv", caption = ROOTDIR + "07_Report/dada2seq.rst", category="03 dada2"),
-        stats_viz = report(OUTPUTDIR + "06_dada2/" + PROJ + "-dada2-stats.qzv", caption = ROOTDIR + "07_Report/dada2summary.rst", category="03 dada2"),
-        featurestat = report(OUTPUTDIR + "07_taxonomy/" + PROJ + "-taxa-table-filtered-dada2.qzv", caption = ROOTDIR + "07_Report/dada2summary.rst", category="04 taxonomy"),
+        rep_viz = report(OUTPUTDIR + "07_taxonomy/" + PROJ + "-rep-filtered-seqs-taxa-dada2.qzv", caption = ROOTDIR + "07_Report/dada2seq.rst", category="03 Dada2"),
+        stats_viz = report(OUTPUTDIR + "06_dada2/" + PROJ + "-dada2-stats.qzv", caption = ROOTDIR + "07_Report/dada2summary.rst", category="03 Dada2"),
+        featurestat = report(OUTPUTDIR + "07_taxonomy/" + PROJ + "-taxa-table-filtered-dada2.qzv", caption = ROOTDIR + "07_Report/dada2summary.rst", category="04 Taxonomy"),
     params:
         metadata = ROOTDIR + "/sample-metadata.tsv"
     conda:
@@ -241,7 +241,7 @@ rule convert:
         taxo_table = OUTPUTDIR + "07_taxonomy/taxonomy.tsv",
     output:
         taxo_table_biom = OUTPUTDIR + "07_taxonomy/" + PROJ + "-asv-table-with-taxonomy.biom",
-        taxo_table_tsv = report(OUTPUTDIR + "07_taxonomy/" + PROJ + "-asv-table-with-taxonomy.tsv", caption = ROOTDIR + "/07_Report/asv_table.rst", category="03 dada2"),
+        taxo_table_tsv = report(OUTPUTDIR + "07_taxonomy/" + PROJ + "-asv-table-with-taxonomy.tsv", caption = ROOTDIR + "/07_Report/asv_table.rst", category="03 Dada2"),
     params:
         directory(OUTPUTDIR + "07_taxonomy/")
     conda:
@@ -260,7 +260,7 @@ rule taxa_barplot:
         rarefactionfiltertable = OUTPUTDIR + "07_taxonomy/" + PROJ + "-rarefaction-table-filtered-dada2.qza",
         sklearn = OUTPUTDIR + "07_taxonomy/" + PROJ + "-tax_sklearn.qza",
     output:
-        taxabarplots = report(OUTPUTDIR + "07_taxonomy/" + PROJ + "-taxa-bar-plots.qzv", caption = ROOTDIR + "/07_Report/taxbarplot.rst", category="04 taxonomy")
+        taxabarplots = report(OUTPUTDIR + "07_taxonomy/" + PROJ + "-taxa-bar-plots.qzv", caption = ROOTDIR + "/07_Report/taxbarplot.rst", category="04 Taxonomy")
     conda:
         ROOTDIR + "/02_Container/qiime2.yaml"
     params:

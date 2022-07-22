@@ -16,7 +16,7 @@ rule deseq2_init:
 
   output:
     rds = "05_Output/11_deseq2_init/all.rds",
-    normalized_counts_file = report("05_Output/11_deseq2_init/normalized_counts.tsv", caption="../07_Report/normalized_counts.rst", category="02 Count matrices")
+    normalized_counts_file = report("05_Output/11_deseq2_init/normalized_counts.tsv", caption="../07_Report/normalized_counts.rst", category="05 Count matrices")
   conda:
     "../02_Container/deseq2.yaml"
 
@@ -43,7 +43,7 @@ rule deseq2_init:
 
 
 #   output:
-#     normalized_counts_annotation_file = report("05_Output/11_deseq2_init/normalized_annotation_counts.tsv", caption="../07_Report/normalized_counts.rst", category="02 Count matrices")
+#     normalized_counts_annotation_file = report("05_Output/11_deseq2_init/normalized_annotation_counts.tsv", caption="../07_Report/normalized_counts.rst", category="05 Count matrices")
 
 #   shell:
 #     """
@@ -65,11 +65,11 @@ rule diffexp:
     ko_list = config["ko_list"]
 
   output:
-    html_report=report(expand(OUTPUTDIR + config["diffexp"]["html_report"]), caption="../07_Report/diffexp.rst", category="03 Report differential expression"),
-    table=report(expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_all_genes_stats.tsv", condition=condition.itertuples(), ref_level=ref_level), caption="../07_Report/stat.rst", category="04 Table differential expression"),
-    sur=report(expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_signif-up-regulated.txt", condition=condition.itertuples(), ref_level=ref_level), caption="../07_Report/stat.rst", category="04 Table differential expression"),
-    sdr=report(expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_signif-down-regulated.txt", condition=condition.itertuples(), ref_level=ref_level), caption="../07_Report/stat.rst", category="04 Table differential expression"),
-    metabolo=report(expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_metabolic_marker_genes.txt", condition=condition.itertuples(), ref_level=ref_level), caption="../07_Report/stat.rst", category="04 Table differential expression")
+    html_report=report(expand(OUTPUTDIR + config["diffexp"]["html_report"]), caption="../07_Report/diffexp.rst", category="07 Report differential expression"),
+    table=report(expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_all_genes_stats.tsv", condition=condition.itertuples(), ref_level=ref_level), caption="../07_Report/stat.rst", category="06 Table differential expression"),
+    sur=report(expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_signif-up-regulated.txt", condition=condition.itertuples(), ref_level=ref_level), caption="../07_Report/stat.rst", category="06 Table differential expression"),
+    sdr=report(expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_signif-down-regulated.txt", condition=condition.itertuples(), ref_level=ref_level), caption="../07_Report/stat.rst", category="06 Table differential expression"),
+    metabolo=report(expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_metabolic_marker_genes.txt", condition=condition.itertuples(), ref_level=ref_level), caption="../07_Report/stat.rst", category="06 Table differential expression")
   
   conda:
     CONTAINER + "diffexp.yaml"

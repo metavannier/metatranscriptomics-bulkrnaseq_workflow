@@ -117,7 +117,7 @@ rule multiqc_trimmed:
   input:
     trim_qc = expand( "05_Output/03_fastqc/{samples}_non-rRNA-reads_{way}_fastqc.zip", samples=SAMPLES, way=WAY)
   output:
-    trim_multi_html = report(OUTPUTDIR + "03_fastqc/non-rRNA-reads_trimmed_multiqc.html", caption = ROOTDIR + "/report/multiqc.rst", category="01 quality report"), 
+    trim_multi_html = report(OUTPUTDIR + "03_fastqc/non-rRNA-reads_trimmed_multiqc.html", caption = ROOTDIR + "/07_Report/multiqc.rst", category="01 Quality report"), 
   params:
     multiqc_output_trim = OUTPUTDIR + "03_fastqc/non-rRNA-reads_trimmed_multiqc_data"
   conda:

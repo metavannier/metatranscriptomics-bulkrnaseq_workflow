@@ -35,6 +35,8 @@ Configure the workflow according to your needs via editing the files and reposit
 
 ### Step 3: Execute workflow
 
+#### In local
+
 - You need [Singularity v3.5.3](https://github.com/hpcng/singularity/blob/master/INSTALL.md#install-golang) installed on your computer or cluster.
 
 - Load snakemake from a docker container and run the workflow from the root by using these commands:
@@ -44,6 +46,14 @@ Configure the workflow according to your needs via editing the files and reposit
 - Then execute the workflow locally via
 
 `snakemake  --use-conda --use-singularity --cores 10`
+
+#### On a cluster
+
+- Adapt the batch scripts run_slurm.sh and cluster_config.json file to run your snakemake from the working directory
+
+It will install snakemake with pip and run the workflow in the HPC:
+
+`sbatch run_slurm.sh`
 
 ### Step 4: Investigate results 
 

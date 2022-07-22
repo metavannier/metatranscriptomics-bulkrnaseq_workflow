@@ -117,7 +117,7 @@ diffexp:
     # Gene name to see the expression between the condition (can be a list of genes)
     gene_name: ""
     # Mutant to represent the gene with the top p-value
-    mutant_level: "T4dom3"
+    mutant_level: "T2dom1"
     # Number of genes to select with the best p-value
     nbpval: 50
     # qvalue threshold

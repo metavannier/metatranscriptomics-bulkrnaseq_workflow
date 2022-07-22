@@ -53,22 +53,22 @@ RUN_ID = expand("{samples.project}_{samples.condition}_{samples.sample}",samples
 
 rule all:
   input:
-    # expand( "05_Output/01_fastqc/{samples}_{run}_fastqc.html", samples=SAMPLES, run=RUN),
-    # expand( "05_Output/01_fastqc/{samples}_{run}_fastqc.zip", samples=SAMPLES, run=RUN),
+    # fastqc_html1=expand( "05_Output/01_fastqc/{samples}_{run}_fastqc.html", samples=SAMPLES, run=RUN),
+    # fastqc_zip1=expand( "05_Output/01_fastqc/{samples}_{run}_fastqc.zip", samples=SAMPLES, run=RUN),
     # sample_trimmed=expand( "05_Output/01_trimmomatic/{samples}_{run}.trimmed.fastq", samples=SAMPLES, run=RUN),
     # sample_untrimmed=expand( "05_Output/01_trimmomatic/{samples}_{run}un.trimmed.fastq", samples=SAMPLES, run=RUN),
     # nonrrna=expand( "05_Output/02_sortmerna/{samples}_non-rRNA-reads_{way}.fq", samples=SAMPLES, way=WAY),
     # rrna=expand( "05_Output/02_sortmerna/{samples}_rRNA-reads_{way}.fq", samples=SAMPLES, way=WAY),
-    # expand( "05_Output/03_fastqc/{samples}_non-rRNA-reads_{way}_fastqc.html", samples=SAMPLES, way=WAY),
-    # expand( "05_Output/03_fastqc/{samples}_non-rRNA-reads_{way}_fastqc.zip", samples=SAMPLES, way=WAY),
-    # OUTPUTDIR + "03_fastqc/non-rRNA-reads_trimmed_multiqc.html",
-    #### Functional annotation with microbeannotator
-    ### Make the database (To do on your local machine with aspera connect)
+    # fastqc_html2=expand( "05_Output/03_fastqc/{samples}_non-rRNA-reads_{way}_fastqc.html", samples=SAMPLES, way=WAY),
+    # fastqc_zip2=expand( "05_Output/03_fastqc/{samples}_non-rRNA-reads_{way}_fastqc.zip", samples=SAMPLES, way=WAY),
+    # multiqc=OUTPUTDIR + "03_fastqc/non-rRNA-reads_trimmed_multiqc.html",
+    # ### Functional annotation with microbeannotator
+    # ## Make the database (To do on your local machine with aspera connect)
     # microbeannotatordb = microbeannotatordb + "/microbeannotator.db",
     # conversiondb = microbeannotatordb + "/conversion.db",
-    ### Annotation
+    # ## Annotation
     # mockannotationfolder = annotationfolder + "/mockfile.txt",
-    #### Qiime import
+    # ### Qiime import
     # q2_import = OUTPUTDIR + "05_qiime_import/" + PROJ + "-demux-paired-end.qza",
     # primer = OUTPUTDIR + "05_qiime_import/" + PROJ + "-PE-demux-noprimer.qzv",
     # table1 = OUTPUTDIR + "06_dada2/" + PROJ + "-table-dada2.qza",
@@ -80,10 +80,10 @@ rule all:
     # taxafiltertable = OUTPUTDIR + "07_taxonomy/" + PROJ + "-taxa-table-filtered-dada2.qza",
     # q2_repseq_filtered = OUTPUTDIR + "07_taxonomy/" + PROJ + "-rep-filtered-seqs-taxa-dada2.qza",
     # table_tax = OUTPUTDIR + "07_taxonomy/taxonomy.tsv",
-    # table_tax_filtered = report(OUTPUTDIR + "07_taxonomy/taxonomy_filtered.tsv", caption = ROOTDIR + "/07_Report/tax.rst", category="04 taxonomy"),
-    # rep_viz = report(OUTPUTDIR + "07_taxonomy/" + PROJ + "-rep-filtered-seqs-taxa-dada2.qzv", caption = ROOTDIR + "/07_Report/dada2seq.rst", category="03 dada2"),
-    # stats_viz = report(OUTPUTDIR + "06_dada2/" + PROJ + "-dada2-stats.qzv", caption = ROOTDIR + "/07_Report/dada2summary.rst", category="03 dada2"),
-    # featurestat = report(OUTPUTDIR + "07_taxonomy/" + PROJ + "-taxa-table-filtered-dada2.qzv", caption = ROOTDIR + "/07_Report/dada2summary.rst", category="04 taxonomy"),
+    # table_tax_filtered = report(OUTPUTDIR + "07_taxonomy/taxonomy_filtered.tsv", caption = ROOTDIR + "/07_Report/tax.rst", category="04 Taxonomy"),
+    # rep_viz = report(OUTPUTDIR + "07_taxonomy/" + PROJ + "-rep-filtered-seqs-taxa-dada2.qzv", caption = ROOTDIR + "/07_Report/dada2seq.rst", category="03 Dada2"),
+    # stats_viz = report(OUTPUTDIR + "06_dada2/" + PROJ + "-dada2-stats.qzv", caption = ROOTDIR + "/07_Report/dada2summary.rst", category="03 Dada2"),
+    # featurestat = report(OUTPUTDIR + "07_taxonomy/" + PROJ + "-taxa-table-filtered-dada2.qzv", caption = ROOTDIR + "/07_Report/dada2summary.rst", category="04 Taxonomy"),
     # rarefactionfiltertable = OUTPUTDIR + "07_taxonomy/" + PROJ + "-rarefaction-table-filtered-dada2.qza",
     # relativefreqtable = OUTPUTDIR + "07_taxonomy/" + PROJ + "-relative-frequency-dada2.qza",
     # table_biom = OUTPUTDIR + "07_taxonomy/feature-table.biom",
@@ -103,12 +103,12 @@ rule all:
     # coverage = expand( OUTPUTDIR + "08_hisat/{samples}_coverage.txt", samples=SAMPLES),
     # avcoverage = expand( OUTPUTDIR + "08_hisat/average_coverage.txt", samples=SAMPLES),
     # countmatrices = expand( OUTPUTDIR + "09_featurecounts/{samples}_count.txt", samples=SAMPLES),
-    # #### To reload if an other reference 
     # count_df = OUTPUTDIR + "10_cpm/count.txt",
     # output_filter_count = OUTPUTDIR + "10_cpm/count_filtered.txt",
     # cpm = OUTPUTDIR + "10_cpm/cpm_filtered.txt",
-    # rds = "05_Output/11_deseq2_init/all.rds",
-    # normalized_counts_file = "05_Output/11_deseq2_init/normalized_counts.tsv",
+    #### To reload if an other reference 
+    rds = "05_Output/11_deseq2_init/all.rds",
+    normalized_counts_file = "05_Output/11_deseq2_init/normalized_counts.tsv",
     # normalized_counts_annotation_file = "05_Output/11_deseq2_init/normalized_annotation_counts.tsv",
     table=expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_all_genes_stats.tsv", condition=condition.itertuples(), ref_level=ref_level),
     sur=expand(OUTPUTDIR + "12_differential_expression/{condition.condition}_vs_{ref_level}_signif-up-regulated.txt", condition=condition.itertuples(), ref_level=ref_level),
