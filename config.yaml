@@ -108,16 +108,16 @@ pca:
 
 diffexp:
     # Path and name of the report file
-    html_report: "12_differential_expression/diffexp_T2ctl1_ref.html"
+    html_report: "12_differential_expression/diffexp_T4dom3_ref.html"
     # Reference to do the comparison
-    ref_level: "T2ctl1"
+    ref_level: "T4dom3"
     # ref_level: "T2ctl1,T2ctl2,T2ctl3,T2dom1,T2dom2,T2dom3,T4ctl1,T4ctl2,T4ctl3,T4dom1,T4dom2,T4dom3"
     # Shrinkage estimator for ranking and visualization (apeglm, normal or ashr)
     lfcshrink_type: "apeglm"
     # Gene name to see the expression between the condition (can be a list of genes)
-    gene_name: ""
+    gene_name: "2606917286,2606916324,2606917943"
     # Mutant to represent the gene with the top p-value
-    mutant_level: "T2dom1"
+    mutant_level: "T4ctl3"
     # Number of genes to select with the best p-value
     nbpval: 50
     # qvalue threshold
