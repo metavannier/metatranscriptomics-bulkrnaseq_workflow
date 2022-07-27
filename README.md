@@ -1,4 +1,4 @@
-# Differential Expression Workflow: Metatranscriptomic analysis
+# Differential Expression Workflow: Metatranscriptomic and bulk RNAseq analysis
 
 ## Author
 
